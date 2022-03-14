@@ -15,14 +15,14 @@ import {
 } from "three";
 
 export default function App() {
-  let timeout;
+  let timeout: number;
 
   useEffect(() => {
     // Clear the animation loop when the component unmounts
     return () => clearTimeout(timeout);
   }, []);
 
-  const onContextCreate = async (gl) => {
+  const onContextCreate = async (gl: WebGLRenderingContext) => {
     const { drawingBufferWidth: width, drawingBufferHeight: height } = gl;
     const sceneColor = 0x6ad6f0;
 
@@ -65,7 +65,7 @@ export default function App() {
       timeout = requestAnimationFrame(render);
       update();
       renderer.render(scene, camera);
-      gl.endFrameEXP();
+      (gl as any).endFrameEXP();
     };
     render();
   };
