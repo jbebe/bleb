@@ -1,5 +1,5 @@
 import { Renderer } from "expo-three";
-import { Color } from "../colors";
+import { BlebColor } from "../colors";
 import { SceneManager } from "./scene-manager";
 
 export type MetaData = {
@@ -27,7 +27,7 @@ export class Engine {
     };
     this.renderer = new Renderer({ gl: this.gl });
     this.renderer.setSize(this.meta.screen.width, this.meta.screen.height);
-    this.renderer.setClearColor(Color.Background);
+    this.renderer.setClearColor(BlebColor.Background);
   }
 
   private render(sceneManager: SceneManager){

@@ -1,9 +1,10 @@
 import { Fog, Object3D } from "three";
-import { Color } from "../colors";
+import { BlebColor } from "../colors";
 import { Floor } from "../components/floor";
+import { Light, LightType } from "../components/light";
 import { Player } from "../components/Player";
 import { SimpleFollowerCamera } from "../components/simple-follower-camera";
-import { DynamicComponent, StaticComponent } from "../engine/component";
+import { StaticComponent } from "../engine/component";
 import { MetaData } from "../engine/engine";
 import { SceneConfiguration } from "../engine/scene-configuration";
 import { SceneManager } from "../engine/scene-manager";
@@ -25,7 +26,7 @@ export class MainScene extends SceneManager {
   }
 
   private static createFog(): Fog {
-    return new Fog(Color.Background, 1, 20);
+    return new Fog(BlebColor.Background, 10, 20);
   }
 
   private static createCamera(player: Object3D, aspectRatio: number) {
@@ -34,13 +35,28 @@ export class MainScene extends SceneManager {
 
   private static createStatic(): StaticComponent<Object3D>[] {
     return [
+      ...MainScene.createLights(),
       new Floor(),
     ];
   }
 
-  private static createDynamic(): DynamicComponent<Object3D>[] {
+  private static createDynamic(){
     return [
       new Player(),
     ];
+  }
+
+  private static createLights(){
+    const ambientLight = new Light({
+      color: BlebColor.Background as number,
+      intensity: 0.2,
+      type: LightType.Ambient,
+    });
+    const directionalLight = new Light({
+      color: BlebColor.Background as number,
+      intensity: 1,
+      type: LightType.Directional,
+    });
+    return [ ambientLight, directionalLight ];
   }
 }
