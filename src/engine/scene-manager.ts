@@ -1,4 +1,5 @@
 import { Camera, Scene } from "three";
+import { InputManager } from "./input-manager";
 import { SceneConfiguration } from "./scene-configuration";
 
 export class SceneManager {
@@ -14,11 +15,11 @@ export class SceneManager {
     this.scene.add(...this.config.dynamic.map(x => x.object));
   }
 
-  update(){
+  update(input: InputManager){
     for (const obj of this.config.dynamic){
-      obj.update(this.scene);
+      obj.update(this, input);
     }
-    this.config.camera?.update(this.scene);
+    this.config.camera?.update(this, input);
   }
 
   get camera(): Camera {

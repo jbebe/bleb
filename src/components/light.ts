@@ -1,6 +1,10 @@
 import * as THREE from "three";
-import { AmbientLight, Camera, Color, DirectionalLight, DirectionalLightShadow, Light, Vector3 } from "three";
+import { AmbientLight, Camera, Color, DirectionalLight, DirectionalLightHelper, DirectionalLightShadow, Light, Vector3 } from "three";
 import { DynamicComponent, StaticComponent } from "../engine/component";
+import { InputManager } from "../engine/input-manager";
+import { SceneManager } from "../engine/scene-manager";
+import { Tag } from "../tags";
+import { Player } from "./Player";
 
 export enum LightType {
   Ambient,
@@ -14,7 +18,8 @@ export type LightConfig = {
   position?: Vector3;
   color: number;
   intensity: number; // [0,1]
-  shadow: boolean
+  shadow: boolean,
+  player?: Player,
 };
 
 export class StaticLight extends StaticComponent<Light> {
@@ -31,8 +36,14 @@ export class DynamicLight extends DynamicComponent<Light> {
     this.config = config;
   }
 
-  update(scene: THREE.Scene): void {
-    
+  update(sceneMgr: SceneManager, input: InputManager): void {
+    /*const offseted = new Vector3(
+      this.config.player?.object.position.x! - 1,
+      this.config.player?.object.position.y! + 1,
+      this.config.player?.object.position.z! - 1,
+    );
+    offseted.multiplyScalar(0.5);
+    this.object.position.set(offseted.x, offseted.y, offseted.z);*/
   }
 }
 

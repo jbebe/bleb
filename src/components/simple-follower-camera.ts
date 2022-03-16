@@ -1,5 +1,7 @@
 import { Object3D, PerspectiveCamera, Scene, Vector3 } from "three";
 import { DynamicComponent } from "../engine/component";
+import { InputManager } from "../engine/input-manager";
+import { SceneManager } from "../engine/scene-manager";
 import { Tag } from "../tags";
 
 export class SimpleFollowerCamera extends DynamicComponent<PerspectiveCamera> {
@@ -8,8 +10,9 @@ export class SimpleFollowerCamera extends DynamicComponent<PerspectiveCamera> {
   static Far = 1000;
 
   playerRef: Object3D;
+  offset: Vector3;
 
-  constructor(player: Object3D, aspectRatio: number){
+  constructor(player: Object3D, aspectRatio: number, offset: Vector3){
     super(new PerspectiveCamera(
       SimpleFollowerCamera.Fov, 
       aspectRatio, 
@@ -17,15 +20,17 @@ export class SimpleFollowerCamera extends DynamicComponent<PerspectiveCamera> {
       SimpleFollowerCamera.Far));
     this.tags.add(Tag.Camera);
     this.playerRef = player;
-    const startPosition = new Vector3(
-      this.playerRef.position.x + 5,
-      this.playerRef.position.y + 10,
-      this.playerRef.position.z + 5,
-    );
+    this.offset = offset;
+    
+    const playerPos = this.playerRef.position.clone();
+    const startPosition = playerPos.add(offset);
     this.object.position.set(startPosition.x, startPosition.y, startPosition.z);
   }
 
-  update(scene: Scene): void {
+  update(sceneMgr: SceneManager, input: InputManager): void {
+    const playerPos = this.playerRef.position.clone();
+    const pos = playerPos.add(this.offset);
+    this.object.position.set(pos.x, pos.y, pos.z);
     this.object.lookAt(this.playerRef.position);
   }
 }

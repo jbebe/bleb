@@ -14,13 +14,13 @@ export class MainScene extends SceneManager {
   constructor(meta: MetaData) {
     const staticComps = MainScene.createStatic();
     const dynamicComps = MainScene.createDynamic();
+    const player = dynamicComps.find(x => x.tags.has(Tag.Player));
     const config: SceneConfiguration = {
       fog: MainScene.createFog(),
       static: staticComps,
       dynamic: dynamicComps,
     };
     super(config);
-    const player = dynamicComps.find(x => x.tags.has(Tag.Player));
     if (!player) throw new Error('Cannot find player in dynamic components');
     config.camera = MainScene.createCamera(player.object, meta.screen.width/meta.screen.height);
   }
@@ -30,36 +30,45 @@ export class MainScene extends SceneManager {
   }
 
   private static createCamera(player: Object3D, aspectRatio: number) {
-    return new SimpleFollowerCamera(player, aspectRatio);
+    const offset = new Vector3(5, 10, 5);
+    return new SimpleFollowerCamera(player, aspectRatio, offset);
   }
 
   private static createStatic(): StaticComponent<Object3D>[] {
     return [
-      ...MainScene.createLights(),
+      ...MainScene.createStaticLights(),
       new Floor(),
     ];
   }
 
   private static createDynamic(){
+    const player = new Player();
     return [
-      new Player(),
+      ...MainScene.createDynamicLights(player),
+      player
     ];
   }
 
-  private static createLights(){
+  private static createStaticLights(){
     const ambientLight = LightFactory.create({
       color: BlebColor.Background as number,
       intensity: 0.2,
       type: LightType.Ambient,
       shadow: false,
     });
+    return [ambientLight];
+  }
+  private static createDynamicLights(player: Player){
     const directionalLight = LightFactory.create({
       color: BlebColor.Background as number,
       intensity: 1,
       type: LightType.Directional,
       shadow: true,
       position: new Vector3(-1, 1, -1),
+      player,
     });
-    return [ambientLight, directionalLight];
+    return [
+      directionalLight
+    ];
   }
 }

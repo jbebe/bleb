@@ -1,5 +1,6 @@
 import { Renderer } from "expo-three";
 import { BlebColor } from "../colors";
+import { InputManager } from "./input-manager";
 import { SceneManager } from "./scene-manager";
 
 export type MetaData = {
@@ -10,9 +11,8 @@ export type MetaData = {
 };
 
 export class Engine {
-
-  animationTimer?: number;
   readonly meta: MetaData;
+  readonly input: InputManager;
 
   private readonly gl: WebGLRenderingContext;
   private readonly renderer: Renderer;
@@ -29,11 +29,12 @@ export class Engine {
     this.renderer.setSize(this.meta.screen.width, this.meta.screen.height);
     this.renderer.setClearColor(BlebColor.Background);
     this.renderer.shadowMap.enabled = true;
+    this.input = new InputManager();
   }
 
   private render(sceneManager: SceneManager){
     const curriedRender = () => {
-      this.animationTimer = requestAnimationFrame(curriedRender);
+      requestAnimationFrame(curriedRender);
       this.update(sceneManager);
       this.renderer.render(sceneManager.scene, sceneManager.camera);
       (this.gl as any).endFrameEXP();
@@ -46,6 +47,6 @@ export class Engine {
   }
 
   private update(sceneManager: SceneManager){
-    sceneManager.update();
+    sceneManager.update(this.input);
   }
 }
