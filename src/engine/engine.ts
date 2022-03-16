@@ -28,6 +28,7 @@ export class Engine {
     this.renderer = new Renderer({ gl: this.gl });
     this.renderer.setSize(this.meta.screen.width, this.meta.screen.height);
     this.renderer.setClearColor(BlebColor.Background);
+    this.renderer.shadowMap.enabled = true;
   }
 
   private render(sceneManager: SceneManager){

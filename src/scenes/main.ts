@@ -1,7 +1,7 @@
-import { Fog, Object3D } from "three";
+import { Fog, Object3D, Vector3 } from "three";
 import { BlebColor } from "../colors";
 import { Floor } from "../components/floor";
-import { Light, LightType } from "../components/light";
+import { LightFactory, LightType } from "../components/light";
 import { Player } from "../components/Player";
 import { SimpleFollowerCamera } from "../components/simple-follower-camera";
 import { StaticComponent } from "../engine/component";
@@ -47,16 +47,19 @@ export class MainScene extends SceneManager {
   }
 
   private static createLights(){
-    const ambientLight = new Light({
+    const ambientLight = LightFactory.create({
       color: BlebColor.Background as number,
       intensity: 0.2,
       type: LightType.Ambient,
+      shadow: false,
     });
-    const directionalLight = new Light({
+    const directionalLight = LightFactory.create({
       color: BlebColor.Background as number,
       intensity: 1,
       type: LightType.Directional,
+      shadow: true,
+      position: new Vector3(-1, 1, -1),
     });
-    return [ ambientLight, directionalLight ];
+    return [ambientLight, directionalLight];
   }
 }
