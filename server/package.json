@@ -1,0 +1,23 @@
+{
+  "name": "bleb-server",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "nodemon src/main.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.3",
+    "ws": "^8.5.0",
+    "cors": "^2.8.5",
+    "body-parser": "^1.19.2"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.21",
+    "@types/cors": "^2.8.12",
+    "nodemon": "^2.0.15",
+    "typescript": "^4.6.2",
+    "ts-node": "10.6.0"
+  }
+}
