@@ -18,15 +18,16 @@ export class Synchronizer {
     this.users.set(userId, userData);
     for (const [uId] of this.users){
       if (uId === userId) continue;
-      ws.send(JSON.stringify({
+      ws.send(JSON.stringify([{
         type: MessageType.NewPlayer,
         playerId: +uId,
-      } as NewPlayerMessage))
+      } as NewPlayerMessage]))
     }
   }
 
-  onMessage(userId: string, message: Message) {
-    switch (message.type){
+  onMessage(userId: string, messages: Message[]) {
+    this.sendOthers(userId, messages);
+    /*switch (message.type){
       case MessageType.NewPlayer:
         console.log('New user created');
         this.sendOthers(userId, message);
@@ -36,7 +37,7 @@ export class Synchronizer {
         this.sendOthers(userId, message);
         break;
       default: throw new Error(`Invalid type ${message.type}`);
-    }
+    }*/
   }
 
   onClose(userId: string) {
@@ -44,11 +45,11 @@ export class Synchronizer {
     // TODO: warn users if someone left?
   }
 
-  sendOthers(userId: string, message: Message){
+  sendOthers(userId: string, messages: Message[]){
     for (const [otherUserId, userData] of this.users){
       if (otherUserId !== userId){
         console.log(`Send message to ${userId}`);
-        userData.ws.send(JSON.stringify(message));
+        userData.ws.send(JSON.stringify(messages));
       }
     }
   }

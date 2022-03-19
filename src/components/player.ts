@@ -12,7 +12,7 @@ export class Player extends Npc {
   constructor(playerId: number, synchronizer: Synchronizer){
     super(playerId);
     this.synchronizer = synchronizer;
-    this.synchronizer.addPlayer();
+    this.synchronizer.addPlayer(playerId);
   }
 
   update(sceneMgr: SceneManager, input: InputManager): void {
@@ -23,7 +23,7 @@ export class Player extends Npc {
     const scaledDownSwipe = normalizedSwipe.multiplyScalar(0.1);
     this.object.position.add(scaledDownSwipe);
     if (!this.prevPos.equals(this.object.position)){
-      this.synchronizer.movePlayer(this.object.position);
+      this.synchronizer.movePlayer(this.object.id, this.object.position);
     }
     this.prevPos = this.object.position.clone();
   }

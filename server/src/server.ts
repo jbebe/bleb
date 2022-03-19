@@ -9,7 +9,7 @@ import { Synchronizer } from './synchronizer';
 
 const port = process.env.PORT || '3001';
 
-function initServer(): Express {
+function initServer(synchronizer: Synchronizer): Express {
   const app = express();
 
   // hack cors
@@ -21,15 +21,15 @@ function initServer(): Express {
   // add json parser
   app.use(bodyParser.json());
   // init routes
-  initRoutes(app);
+  initRoutes(app, synchronizer);
 
   return app;
 }
 
 export function startServer(){
-  const app = initServer();
-  const server = http.createServer(app);
   const synchronizer = new Synchronizer();
+  const app = initServer(synchronizer);
+  const server = http.createServer(app);
   initWebsocket(server, synchronizer);
   server.listen(port, () => {
     console.log(`Server started on port ${(server.address() as AddressInfo).port}`);

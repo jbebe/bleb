@@ -16,16 +16,9 @@ export default function App() {
       id: randomId,
     } as User;
   });
-  const [synchronizer, setSynchronizer] = useState(undefined as Synchronizer | undefined);
-  useEffect(() => {
-    (async () => {
-      const s = await Synchronizer.createAsync(user);
-      setSynchronizer(s);
-    })();
-  }, []);
-  if (!user || !synchronizer) return null;
-
+  if (!user) return null;
   const onContextCreate = async (gl: WebGLRenderingContext) => {
+    const synchronizer = await Synchronizer.createAsync(user);
     const engine = new Engine(gl, synchronizer);
     events.onSetSwipe = (from, to) => {
       engine.input.swipeVector = to.sub(from);
@@ -33,6 +26,7 @@ export default function App() {
     engine.start(new MainScene(engine.meta, user, synchronizer));
   };
   return <>
+    <h1 style={({ margin:'30px 40px'})}>#{user.id}</h1>
     <GLView style={{ flex: 1 }} onContextCreate={onContextCreate} />
     <PointerView events={events} />
   </>;
