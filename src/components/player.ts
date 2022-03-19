@@ -1,16 +1,32 @@
-import { Vector2, Vector3 } from "three";
+import { TextureLoader } from "expo-three";
+import { BoxBufferGeometry, Mesh, MeshStandardMaterial, Scene, Vector2, Vector3 } from "three";
+import { DynamicComponent } from "../engine/component";
 import { InputManager } from "../engine/input-manager";
 import { SceneManager } from "../engine/scene-manager";
 import { Synchronizer } from "../engine/synchronizer";
+import { Tag } from "../tags";
 import { Npc } from "./npc";
 
-export class Player extends Npc {
+class IconMesh extends Mesh {
+  constructor() {
+    super(
+      new BoxBufferGeometry(1.0, 1.0, 1.0),
+      new MeshStandardMaterial({ 
+        map: new TextureLoader().load(require('../../assets/icon.jpg'))
+      }),
+    );
+    this.castShadow = true;
+    this.position.set(0, 0.5, 0);
+  }
+}
+
+export class Player extends DynamicComponent<IconMesh> {
   
   synchronizer: Synchronizer
   prevPos: Vector3 = new Vector3()
 
   constructor(playerId: number, synchronizer: Synchronizer){
-    super(playerId);
+    super(new IconMesh(), Tag.Player);
     this.synchronizer = synchronizer;
     this.synchronizer.addPlayer(playerId);
   }

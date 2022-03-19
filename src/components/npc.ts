@@ -1,16 +1,16 @@
 import { TextureLoader } from "expo-three";
-import { BoxBufferGeometry, Mesh, MeshStandardMaterial, Scene, Vector2, Vector3 } from "three";
+import { BoxBufferGeometry, Mesh, MeshStandardMaterial, Scene, SphereBufferGeometry, Vector2, Vector3 } from "three";
 import { DynamicComponent } from "../engine/component";
 import { InputManager } from "../engine/input-manager";
 import { SceneManager } from "../engine/scene-manager";
 import { Tag } from "../tags";
 
-class IconMesh extends Mesh {
-  constructor() {
+class NpcMesh extends Mesh {
+  constructor(){
     super(
-      new BoxBufferGeometry(1.0, 1.0, 1.0),
+      new SphereBufferGeometry(0.6, 10, 10),
       new MeshStandardMaterial({ 
-        map: new TextureLoader().load(require('../../assets/icon.jpg'))
+        color: 0xff0000,
       }),
     );
     this.castShadow = true;
@@ -18,11 +18,27 @@ class IconMesh extends Mesh {
   }
 }
 
-export class Npc extends DynamicComponent<IconMesh> {
+export class Npc extends DynamicComponent<NpcMesh> {
+  fadeIter: number;
+  targetPosition?: Vector3;
+
   constructor(playerId: number){
-    super(new IconMesh(), Tag.Npc);
+    super(new NpcMesh(), Tag.Npc);
     this.props.set('playerid', playerId);
+    this.targetPosition = this.object.position;
+    this.fadeIter = 0;
   }
 
-  update(sceneMgr: SceneManager, input: InputManager): void {}
+  update(sceneMgr: SceneManager, input: InputManager): void {
+    if (!this.targetPosition) return;
+
+    const newPos = this.object.position.clone();
+    newPos.lerp(this.targetPosition, this.fadeIter);
+    this.object.position.set(newPos.x, newPos.y, newPos.z);
+    this.fadeIter += 0.00005;
+    if (this.fadeIter >= 1){
+      this.fadeIter = 0;
+      this.targetPosition = undefined;
+    }
+  }
 }
