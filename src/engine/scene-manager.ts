@@ -1,4 +1,6 @@
 import { Camera, Scene } from "three";
+import { Npc } from "../components/npc";
+import { RawVector3 } from "../types";
 import { InputManager } from "./input-manager";
 import { SceneConfiguration } from "./scene-configuration";
 
@@ -24,5 +26,17 @@ export class SceneManager {
 
   get camera(): Camera {
     return this.config.camera!.object;
+  }
+
+  addNpc(playerId: number){
+    const npc = new Npc(playerId);
+    this.config.dynamic.push(npc);
+    this.scene.add(npc.object);
+  }
+  
+  moveNpc(playerId: number, position: RawVector3){
+    const npc = this.config.dynamic.find(x => x.props.get('playerid') === playerId);
+    if (!npc) throw new Error(`Unknown npc with id: ${playerId}`);
+    npc.object.position.set(position.x, position.y, position.z);
   }
 }

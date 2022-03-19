@@ -6,10 +6,12 @@ import { SceneManager } from "./scene-manager";
 class ComponentBase<T extends Object3D> {
   object: T;
   tags: Set<Tag>;
+  props: Map<string, any>;
 
   constructor(object: T, ...tags: Tag[]){
     this.object = object;
     this.tags = new Set<Tag>(tags);
+    this.props = new Map<string, any>();
   }
 }
 

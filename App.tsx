@@ -1,7 +1,7 @@
 import { GLView } from "expo-gl";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Engine } from "./src/engine/engine";
-import { User } from "./src/engine/synchronizer";
+import { Synchronizer, User } from "./src/engine/synchronizer";
 import PointerView, { PointerEvents } from "./src/react/pointer-view";
 import usePersistent from "./src/react/use-persistent";
 import { MainScene } from "./src/scenes/main";
@@ -16,13 +16,21 @@ export default function App() {
       id: randomId,
     } as User;
   });
-  if (!user) return null;
-  const onContextCreate = (gl: WebGLRenderingContext) => {
-    const engine = new Engine(gl, user);
+  const [synchronizer, setSynchronizer] = useState(undefined as Synchronizer | undefined);
+  useEffect(() => {
+    (async () => {
+      const s = await Synchronizer.createAsync(user);
+      setSynchronizer(s);
+    })();
+  }, []);
+  if (!user || !synchronizer) return null;
+
+  const onContextCreate = async (gl: WebGLRenderingContext) => {
+    const engine = new Engine(gl, synchronizer);
     events.onSetSwipe = (from, to) => {
       engine.input.swipeVector = to.sub(from);
     };
-    engine.start(new MainScene(engine.meta));
+    engine.start(new MainScene(engine.meta, user, synchronizer));
   };
   return <>
     <GLView style={{ flex: 1 }} onContextCreate={onContextCreate} />

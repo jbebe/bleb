@@ -1,24 +1,24 @@
 import { Fog, Object3D, Vector3 } from "three";
 import { BlebColor } from "../colors";
 import { Floor } from "../components/floor";
-import { LightFactory, LightType } from "../components/light";
+import { DynamicLight, LightFactory, LightType } from "../components/light";
 import { Player } from "../components/Player";
 import { SimpleFollowerCamera } from "../components/simple-follower-camera";
 import { StaticComponent } from "../engine/component";
 import { MetaData } from "../engine/engine";
 import { SceneConfiguration } from "../engine/scene-configuration";
 import { SceneManager } from "../engine/scene-manager";
-import { Tag } from "../tags";
+import { Synchronizer, User } from "../engine/synchronizer";
 
 export class MainScene extends SceneManager {
-  constructor(meta: MetaData) {
+  constructor(meta: MetaData, user: User, synchronizer: Synchronizer) {
     const staticComps = MainScene.createStatic();
-    const dynamicComps = MainScene.createDynamic();
-    const player = dynamicComps.find(x => x.tags.has(Tag.Player));
+    const player = new Player(user.id, synchronizer);
+    const dynamicComps = MainScene.createDynamic(player);
     const config: SceneConfiguration = {
       fog: MainScene.createFog(),
       static: staticComps,
-      dynamic: dynamicComps,
+      dynamic: [player, ...dynamicComps],
     };
     super(config);
     if (!player) throw new Error('Cannot find player in dynamic components');
@@ -41,11 +41,9 @@ export class MainScene extends SceneManager {
     ];
   }
 
-  private static createDynamic(){
-    const player = new Player();
+  private static createDynamic(player: Player) {
     return [
       ...MainScene.createDynamicLights(player),
-      player
     ];
   }
 
@@ -66,7 +64,7 @@ export class MainScene extends SceneManager {
       shadow: true,
       position: new Vector3(-1, 1, -1),
       player,
-    });
+    }) as DynamicLight;
     return [
       directionalLight
     ];

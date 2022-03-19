@@ -2,7 +2,7 @@ import { Renderer } from "expo-three";
 import { BlebColor } from "../colors";
 import { InputManager } from "./input-manager";
 import { SceneManager } from "./scene-manager";
-import { Synchronizer, User } from "./synchronizer";
+import { Synchronizer } from "./synchronizer";
 
 export type MetaData = {
   screen: {
@@ -14,12 +14,12 @@ export type MetaData = {
 export class Engine {
   readonly meta: MetaData;
   readonly input: InputManager;
-
+  
   private readonly gl: WebGLRenderingContext;
   private readonly renderer: Renderer;
   private readonly sychronizer: Synchronizer;
 
-  constructor(gl: WebGLRenderingContext, user: User){
+  constructor(gl: WebGLRenderingContext, synchronizer: Synchronizer){
     this.gl = gl;
     this.meta = {
       screen: {
@@ -32,7 +32,7 @@ export class Engine {
     this.renderer.setClearColor(BlebColor.Background);
     this.renderer.shadowMap.enabled = true;
     this.input = new InputManager();
-    this.sychronizer = new Synchronizer(user);
+    this.sychronizer = synchronizer;
   }
 
   private render(sceneManager: SceneManager){
