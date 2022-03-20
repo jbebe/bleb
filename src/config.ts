@@ -1,2 +1,2 @@
-export const apiUrl = 'http://0.0.0.0:3001/api';
-export const wsUrl = 'ws://0.0.0.0:3001/ws';
+export const apiUrl = 'http://192.168.1.4:3001/api';
+export const wsUrl = 'ws://192.168.1.4:3001/ws';

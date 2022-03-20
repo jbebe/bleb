@@ -17,7 +17,7 @@ export function initWebsocket(server: Server, synchronizer: Synchronizer){
     synchronizer.onConnection(userId, ws);
     
     ws.on('message', (message: Buffer) => {
-      console.log('received: %s', message);
+      //console.log('received: %s', message);
       const obj = JSON.parse(message.toString('utf8'));
       synchronizer.onMessage(userId, obj);
     });

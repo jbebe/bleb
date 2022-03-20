@@ -1,24 +1,25 @@
-import { Fog, Object3D, Vector3 } from "three";
+import { Fog, Object3D, Vector2, Vector3 } from "three";
 import { BlebColor } from "../colors";
+import { Debris } from "../components/debris";
 import { Floor } from "../components/floor";
 import { DynamicLight, LightFactory, LightType } from "../components/light";
 import { Player } from "../components/player";
 import { SimpleFollowerCamera } from "../components/simple-follower-camera";
-import { StaticComponent } from "../engine/component";
+import { DynamicComponent, StaticComponent } from "../engine/component";
 import { MetaData } from "../engine/engine";
 import { SceneConfiguration } from "../engine/scene-configuration";
 import { SceneManager } from "../engine/scene-manager";
 import { Synchronizer, User } from "../engine/synchronizer";
+import MersenneTwister from "mersenne-twister";
 
 export class MainScene extends SceneManager {
   constructor(meta: MetaData, user: User, synchronizer: Synchronizer) {
-    const staticComps = MainScene.createStatic();
     const player = new Player(user.id, synchronizer);
-    const dynamicComps = MainScene.createDynamic(player);
+    const { staticComponent, dynamicComponent } = MainScene.createComponents(player);
     const config: SceneConfiguration = {
       fog: MainScene.createFog(),
-      static: staticComps,
-      dynamic: [player, ...dynamicComps],
+      static: staticComponent,
+      dynamic: [player, ...dynamicComponent],
     };
     super(config);
     if (!player) throw new Error('Cannot find player in dynamic components');
@@ -34,39 +35,52 @@ export class MainScene extends SceneManager {
     return new SimpleFollowerCamera(player, aspectRatio, offset);
   }
 
-  private static createStatic(): StaticComponent<Object3D>[] {
-    return [
-      ...MainScene.createStaticLights(),
-      new Floor(),
-    ];
+  private static createComponents(player: Player) {
+    const staticComponent: StaticComponent<Object3D>[] = [];
+    const dynamicComponent: DynamicComponent<Object3D>[] = [];
+    MainScene.createLights(player, staticComponent, dynamicComponent);
+    staticComponent.push(new Floor());
+    this.createDebris(staticComponent);
+    return {
+      staticComponent,
+      dynamicComponent,
+    };
   }
 
-  private static createDynamic(player: Player) {
-    return [
-      ...MainScene.createDynamicLights(player),
-    ];
+  static createDebris(statics: StaticComponent<Object3D>[]){
+    const rand = new MersenneTwister(13);
+    const scatterSize = 300;
+    for (let i = 0; i < 1000; ++i){
+      const pos = new Vector2(
+        rand.random() * scatterSize - scatterSize/2,
+        rand.random() * scatterSize - scatterSize/2,
+      );
+      statics.push(new Debris(pos));
+    }
   }
 
-  private static createStaticLights(){
-    const ambientLight = LightFactory.create({
+  private static createLights(
+    player: Player, 
+    staticComponent: StaticComponent<Object3D>[],
+    dynamicComponent: DynamicComponent<Object3D>[])
+  {
+    const ambientLight = LightFactory.createStatic({
       color: BlebColor.Background as number,
       intensity: 0.2,
       type: LightType.Ambient,
       shadow: false,
     });
-    return [ambientLight];
-  }
-  private static createDynamicLights(player: Player){
-    const directionalLight = LightFactory.create({
+    staticComponent.push(ambientLight);
+    const [directionalLight, dirLightTarget] = LightFactory.createDynamic({
       color: BlebColor.Background as number,
-      intensity: 1,
+      intensity: 0.7,
       type: LightType.Directional,
       shadow: true,
-      position: new Vector3(-1, 1, -1),
+      position: new Vector3(0, 20, -5),
       player,
-    }) as DynamicLight;
-    return [
-      directionalLight
-    ];
+    });
+    dynamicComponent.push(directionalLight);
+    if (dirLightTarget) dynamicComponent.push(dirLightTarget);
   }
+
 }

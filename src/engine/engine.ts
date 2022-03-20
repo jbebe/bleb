@@ -34,10 +34,10 @@ export class Engine {
     this.gl.canvas.width = screen.width;
     this.gl.canvas.height = screen.height;
     this.renderer = new Renderer({ gl: this.gl });
-    this.renderer.setSize(screen.width, screen.height, false);
+    this.renderer.setSize(screen.width, screen.height, true);
     this.renderer.setClearColor(BlebColor.Background);
     this.renderer.shadowMap.enabled = true;
-    this.input = new InputManager();
+    this.input = new InputManager(this.meta);
     this.sychronizer = synchronizer;
   }
 

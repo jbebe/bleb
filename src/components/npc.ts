@@ -1,6 +1,6 @@
 import { TextureLoader } from "expo-three";
 import { BoxBufferGeometry, Mesh, MeshStandardMaterial, Scene, SphereBufferGeometry, Vector2, Vector3 } from "three";
-import { DynamicComponent } from "../engine/component";
+import { DynamicComponent, EventfulComponent } from "../engine/component";
 import { InputManager } from "../engine/input-manager";
 import { SceneManager } from "../engine/scene-manager";
 import { Tag } from "../tags";
@@ -18,15 +18,16 @@ class NpcMesh extends Mesh {
   }
 }
 
-export class Npc extends DynamicComponent<NpcMesh> {
+export class Npc extends DynamicComponent<NpcMesh> implements EventfulComponent {
   fadeIter: number;
   targetPosition?: Vector3;
 
   constructor(playerId: number){
-    super(new NpcMesh(), Tag.Npc);
+    super(new NpcMesh(), Tag.Npc, Tag.Event);
     this.props.set('playerid', playerId);
     this.targetPosition = this.object.position;
     this.fadeIter = 0;
+    this.events.onClick = () => this.onClick();
   }
 
   update(sceneMgr: SceneManager, input: InputManager): void {
@@ -40,5 +41,9 @@ export class Npc extends DynamicComponent<NpcMesh> {
       this.fadeIter = 0;
       this.targetPosition = undefined;
     }
+  }
+
+  onClick(){
+    console.log(`Player clicked on this npc`);
   }
 }

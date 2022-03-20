@@ -62,11 +62,8 @@ export default function PointerView({ events }: Props){
 
   return <View style={{ 
     position: "absolute", 
-    width: `calc(100% - 2*${CURSOR_SIDE_SIZE}px)`,
-    height: `calc(100% - 2*${CURSOR_SIDE_SIZE}px)`,
-    margin: `${CURSOR_SIDE_SIZE}px`,
-    borderColor: 'rgba(0,0,0,0.2)',
-    borderWidth: 5 }}
+    width: '100%',
+    height: '100%' }}
     onStartShouldSetResponder={() => true}
     onResponderMove={onMove}
     onResponderRelease={onRelease}>

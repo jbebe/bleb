@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { AmbientLight, Camera, Color, DirectionalLight, DirectionalLightHelper, DirectionalLightShadow, Light, Vector3 } from "three";
+import { AmbientLight, Camera, Color, DirectionalLight, DirectionalLightHelper, DirectionalLightShadow, Light, Object3D, OrthographicCamera, Vector2, Vector3 } from "three";
 import { DynamicComponent, StaticComponent } from "../engine/component";
 import { InputManager } from "../engine/input-manager";
 import { SceneManager } from "../engine/scene-manager";
@@ -33,35 +33,54 @@ export class DynamicLight extends DynamicComponent<Light> {
 
   constructor(light: Light, config: LightConfig){
     super(light);
+    const size = 20;
+    this.object.shadow.camera = new OrthographicCamera(-size, size, size, -size, 0.5, 1000); 
+    this.object.shadow.mapSize = new Vector2(1024, 1024);
     this.config = config;
   }
 
   update(sceneMgr: SceneManager, input: InputManager): void {
-    /*const offseted = new Vector3(
-      this.config.player?.object.position.x! - 1,
-      this.config.player?.object.position.y! + 1,
-      this.config.player?.object.position.z! - 1,
+    this.object.position.set(
+      sceneMgr.playerRef.object.position.x + 0,
+      this.object.position.y,
+      sceneMgr.playerRef.object.position.z + -10,
     );
-    offseted.multiplyScalar(0.5);
-    this.object.position.set(offseted.x, offseted.y, offseted.z);*/
+  }
+}
+
+export class LightTarget extends DynamicComponent<Object3D> {
+  update(scene: SceneManager, input: InputManager): void {
+    this.object.position.set(
+      scene.playerRef.object.position.x,
+      scene.playerRef.object.position.y,
+      scene.playerRef.object.position.z,
+    );
   }
 }
 
 export class LightFactory {
-  static create(config: LightConfig): StaticComponent<Light> | DynamicComponent<Light> {
+  static createStatic(config: LightConfig): StaticLight {
     return {
       [LightType.Ambient as number](){
         const l = new AmbientLight(config.color, config.intensity);
         l.castShadow = config.shadow;
         return new StaticLight(l);
       },
+    }[config.type]();
+  }
+
+  static createDynamic(config: LightConfig): [DynamicLight, LightTarget | undefined] {
+    return {
       [LightType.Directional as number](){
         const l = new DirectionalLight(config.color, config.intensity);
+        let target = undefined as StaticComponent<Object3D> | undefined;
         if (config.shadow){
           l.castShadow = true;
           if (config.position) l.position.set(config.position.x, config.position.y, config.position.z);
+          target = new LightTarget(l.target);
+          console.log('target is set');
         }
-        return new DynamicLight(l, config);
+        return [new DynamicLight(l, config), target] as [DynamicLight, LightTarget | undefined];
       },
     }[config.type]();
   }

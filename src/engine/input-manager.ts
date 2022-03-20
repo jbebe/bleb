@@ -1,6 +1,13 @@
 import { Vector2 } from "three";
+import { MetaData } from "./engine";
 
 export class InputManager {
-  swipeVector: Vector2 = new Vector2(0, 0);
-  clickLocation: Vector2 = new Vector2(0, 0);
+  meta: MetaData;
+
+  constructor(meta: MetaData){
+    this.meta = meta;
+  }
+
+  swipeVector: Vector2 | undefined;
+  clickLocation: Vector2 | undefined;
 }

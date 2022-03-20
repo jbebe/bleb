@@ -29,7 +29,6 @@ export default function App() {
     engine.start(new MainScene(engine.meta, user, synchronizer));
   };
   return <>
-    <h1 style={({ margin:'30px 40px'})}>#{user.id}</h1>
     <GLView style={{ flex: 1 }} onContextCreate={onContextCreate} />
     <PointerView events={events} />
   </>;
