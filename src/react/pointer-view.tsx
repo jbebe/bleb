@@ -4,11 +4,12 @@ import { Vector2 } from "three";
 
 export type PointerEvents = {
   onSetSwipe?: (from: Vector2, to: Vector2) => void
+  onSetClick?: (loc: Vector2) => void
 };
 
-let touchData: {
+let moveData: {
   from: Vector2,
-  to: Vector2,
+  to?: Vector2,
 } | undefined;
 
 type Props = {
@@ -27,21 +28,24 @@ export default function PointerView({ events }: Props){
   const onMove = (event: GestureResponderEvent) => {
     const locX = event.nativeEvent.locationX;
     const locY = event.nativeEvent.locationY;
-    if (!touchData){
-      touchData = {
+    if (!moveData){
+      moveData = {
         from: new Vector2(locX, locY),
-        to: new Vector2(0, 0),
       };
     } else {
-      touchData.to.set(locX, locY);
-      if (events.onSetSwipe) events.onSetSwipe(touchData.from, touchData.to);
+      moveData.to = new Vector2(locX, locY);
+      if (events.onSetSwipe) events.onSetSwipe(moveData.from, moveData.to);
     }
     touch.setValue({ x: locX, y: locY });
   };
-  const onRelease = () => {
-    if (touchData){
-      touchData = undefined;
+  const onRelease = (event: GestureResponderEvent) => {
+    if (moveData){
+      moveData = undefined;
       if (events.onSetSwipe) events.onSetSwipe(new Vector2(0, 0), new Vector2(0, 0));
+    } else {
+      const locX = event.nativeEvent.locationX;
+      const locY = event.nativeEvent.locationY;
+      if (events.onSetClick) events.onSetClick(new Vector2(locX, locY));
     }
     Animated.spring(touch, {
       toValue: {

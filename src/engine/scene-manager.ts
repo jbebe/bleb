@@ -22,6 +22,7 @@ export class SceneManager {
       obj.update(this, input);
     }
     this.config.camera?.update(this, input);
+    //input.update()
   }
 
   get camera(): Camera {

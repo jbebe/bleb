@@ -32,6 +32,7 @@ export function startServer(){
   const server = http.createServer(app);
   initWebsocket(server, synchronizer);
   server.listen(port, () => {
-    console.log(`Server started on port ${(server.address() as AddressInfo).port}`);
+    const addr = server.address() as AddressInfo;
+    console.log(`Server started at ${addr.address}:${addr.port}`);
   });
 }

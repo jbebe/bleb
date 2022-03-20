@@ -4,7 +4,7 @@ import { DynamicComponent, StaticComponent } from "../engine/component";
 import { InputManager } from "../engine/input-manager";
 import { SceneManager } from "../engine/scene-manager";
 import { Tag } from "../tags";
-import { Player } from "./Player";
+import { Player } from "./player";
 
 export enum LightType {
   Ambient,

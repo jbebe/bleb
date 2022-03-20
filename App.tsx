@@ -1,5 +1,5 @@
 import { GLView } from "expo-gl";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Engine } from "./src/engine/engine";
 import { Synchronizer, User } from "./src/engine/synchronizer";
 import PointerView, { PointerEvents } from "./src/react/pointer-view";
@@ -22,6 +22,9 @@ export default function App() {
     const engine = new Engine(gl, synchronizer);
     events.onSetSwipe = (from, to) => {
       engine.input.swipeVector = to.sub(from);
+    };
+    events.onSetClick = (loc) => {
+      engine.input.clickLocation = loc;
     };
     engine.start(new MainScene(engine.meta, user, synchronizer));
   };

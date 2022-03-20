@@ -2,7 +2,7 @@ import { Fog, Object3D, Vector3 } from "three";
 import { BlebColor } from "../colors";
 import { Floor } from "../components/floor";
 import { DynamicLight, LightFactory, LightType } from "../components/light";
-import { Player } from "../components/Player";
+import { Player } from "../components/player";
 import { SimpleFollowerCamera } from "../components/simple-follower-camera";
 import { StaticComponent } from "../engine/component";
 import { MetaData } from "../engine/engine";

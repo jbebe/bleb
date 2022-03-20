@@ -35,7 +35,7 @@ export class Npc extends DynamicComponent<NpcMesh> {
     const newPos = this.object.position.clone();
     newPos.lerp(this.targetPosition, this.fadeIter);
     this.object.position.set(newPos.x, newPos.y, newPos.z);
-    this.fadeIter += 0.00005;
+    this.fadeIter += 0.00004;
     if (this.fadeIter >= 1){
       this.fadeIter = 0;
       this.targetPosition = undefined;

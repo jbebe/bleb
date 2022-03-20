@@ -27,8 +27,14 @@ export class Engine {
         width: gl.drawingBufferWidth,
       }
     };
+    const screen = {
+      width: Math.floor(this.meta.screen.width / 2),
+      height: Math.floor(this.meta.screen.height / 2),
+    }
+    this.gl.canvas.width = screen.width;
+    this.gl.canvas.height = screen.height;
     this.renderer = new Renderer({ gl: this.gl });
-    this.renderer.setSize(this.meta.screen.width, this.meta.screen.height);
+    this.renderer.setSize(screen.width, screen.height, false);
     this.renderer.setClearColor(BlebColor.Background);
     this.renderer.shadowMap.enabled = true;
     this.input = new InputManager();
